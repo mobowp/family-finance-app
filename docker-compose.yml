@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: family-finance-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # Database file will be stored in the mounted volume
+      - DATABASE_URL=file:/app/data/dev.db
+      # You should generate a random string for this
+      - AUTH_SECRET=change_me_to_a_secure_random_string
+      # The public URL of your application
+      - NEXTAUTH_URL=http://114.55.131.189:3000
+      - AUTH_TRUST_HOST=true
+    volumes:
+      # Persist the database file
+      - ./data:/app/data

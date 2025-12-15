@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  password  String
+  image     String?
+  role      String   @default("USER") // USER, ADMIN
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  accounts     Account[]
+  transactions Transaction[]
+  assets       Asset[]
+  budgets      Budget[]
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  name      String
+  type      String   // CASH, BANK, CREDIT, ALIPAY, WECHAT
+  balance   Float    @default(0)
+  currency  String   @default("CNY")
+  icon      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parentId  String?
+  parent    Account?  @relation("AccountToAccount", fields: [parentId], references: [id])
+  children  Account[] @relation("AccountToAccount")
+
+  transactions Transaction[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  type      String   // INCOME, EXPENSE
+  icon      String?
+  parentId  String?
+  parent    Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryToCategory")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  amount      Float
+  type        String   // INCOME, EXPENSE, TRANSFER
+  date        DateTime
+  description String?
+  
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  
+  accountId   String
+  account     Account @relation(fields: [accountId], references: [id])
+
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AssetType {
+  id        String   @id @default(uuid())
+  name      String
+  code      String   @unique // STOCK, FUND, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Asset {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // Stores the AssetType code
+  symbol      String?  // Stock code
+  quantity    Float
+  costPrice   Float
+  marketPrice Float?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id         String   @id @default(uuid())
+  amount     Float
+  period     String   // MONTH, YEAR
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
