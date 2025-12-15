@@ -34,12 +34,12 @@ export function AccountList({ accounts, users = [], isVisible = true }: AccountL
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">账户列表</h2>
           <p className="text-muted-foreground mt-1">管理您的所有资金账户及余额</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 w-full md:w-auto">
           {users.length > 0 && (
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[180px]">

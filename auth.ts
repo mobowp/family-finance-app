@@ -29,7 +29,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           const user = await getUser(email);
           if (!user) return null;
           
-          const passwordsMatch = await bcrypt.compare(password, user.password);
+          // Try bcrypt compare first if it looks like a hash
+          let passwordsMatch = false;
+          if (user.password.startsWith('$2')) {
+             passwordsMatch = await bcrypt.compare(password, user.password);
+          } else {
+             passwordsMatch = password === user.password;
+          }
+
           if (passwordsMatch) return user;
         }
         

@@ -51,10 +51,10 @@ export function Navbar() {
   // 不过为了保持一致性，我先美化通用版。
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 supports-[backdrop-filter]:bg-white/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80 supports-[backdrop-filter]:bg-white/60 safe-area-top">
       <div className="flex h-16 items-center px-4 max-w-7xl mx-auto justify-between">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-3 group">
+        <div className="flex items-center gap-2 sm:gap-8">
+          <Link href="/" className="hidden sm:flex items-center space-x-3 group">
             <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105 duration-300">
               <Wallet className="h-5 w-5" />
             </div>
@@ -63,19 +63,19 @@ export function Navbar() {
             </span>
           </Link>
           
-          <div className="hidden md:flex items-center gap-1 bg-slate-100/50 dark:bg-slate-900/50 p-1 rounded-full border border-slate-200/50 dark:border-slate-800/50">
+          <div className="flex items-center gap-1.5 bg-slate-100/50 dark:bg-slate-900/50 p-1.5 rounded-full border border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar max-w-[calc(100vw-80px)] sm:max-w-none">
             {routes.map((route) => (
               <Link
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "relative flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-300",
+                  "relative flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium rounded-full transition-all duration-300 whitespace-nowrap",
                   route.active 
                     ? "text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-black/5 dark:ring-white/10" 
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
                 )}
               >
-                <route.icon className={cn("h-4 w-4 transition-transform duration-300", route.active && "scale-110")} />
+                <route.icon className={cn("h-5 w-5 transition-transform duration-300", route.active && "scale-110")} />
                 {route.label}
               </Link>
             ))}
@@ -83,15 +83,15 @@ export function Navbar() {
         </div>
         
         <div className="flex items-center gap-3">
-           <Button variant="ghost" size="icon" className="md:hidden text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+           <Button variant="ghost" size="icon" className="hidden text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
              <Menu className="h-5 w-5" />
            </Button>
            <NavbarUser />
         </div>
       </div>
       
-      {/* Mobile Nav - Glassmorphism Bottom Bar */}
-      <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+      {/* Mobile Nav - Glassmorphism Bottom Bar - Hidden as requested */}
+      <div className="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden safe-area-bottom">
         <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-2 grid grid-cols-4 gap-1">
            {routes.map((route) => (
               <Link

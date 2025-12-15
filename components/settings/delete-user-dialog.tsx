@@ -20,9 +20,10 @@ import { useToast } from '@/hooks/use-toast';
 interface DeleteUserDialogProps {
   userId: string;
   userName: string;
+  children?: React.ReactNode;
 }
 
-export function DeleteUserDialog({ userId, userName }: DeleteUserDialogProps) {
+export function DeleteUserDialog({ userId, userName, children }: DeleteUserDialogProps) {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,9 +51,11 @@ export function DeleteUserDialog({ userId, userName }: DeleteUserDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors">
-          <Trash2 className="h-4 w-4" />
-        </button>
+        {children || (
+          <button className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

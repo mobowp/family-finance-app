@@ -7,6 +7,7 @@ import { AppearanceForm } from "@/components/settings/appearance-form";
 import { CategoriesSettings } from "@/components/settings/categories-settings";
 import { AssetTypeSettings } from "@/components/settings/asset-type-settings";
 import { UsersSettings } from "@/components/settings/users-settings";
+import { ApiSettings } from "@/components/settings/api-settings";
 import { redirect } from "next/navigation";
 import { 
   User, 
@@ -14,7 +15,8 @@ import {
   Users, 
   Shield, 
   Palette, 
-  Settings as SettingsIcon 
+  Settings as SettingsIcon,
+  Key
 } from "lucide-react";
 
 export default async function SettingsPage({
@@ -32,7 +34,7 @@ export default async function SettingsPage({
   const defaultTab = typeof searchParams.tab === 'string' ? searchParams.tab : 'profile';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header */}
@@ -54,48 +56,58 @@ export default async function SettingsPage({
           
           {/* Sidebar Navigation */}
           <aside className="lg:w-1/4">
-            <Card className="border-white/20 dark:border-slate-700/30 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl shadow-xl sticky top-8">
-              <CardContent className="p-4">
-                <TabsList className="flex flex-col h-auto items-stretch bg-transparent p-0 space-y-2">
+            <Card className="border-white/20 dark:border-slate-700/30 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl shadow-xl lg:sticky lg:top-8">
+              <CardContent className="p-2 lg:p-4">
+                <TabsList className="flex flex-row lg:flex-col w-full h-auto items-center lg:items-stretch justify-start bg-transparent p-1 space-x-2 lg:space-x-0 lg:space-y-2 overflow-x-auto no-scrollbar">
                   <TabsTrigger 
                     value="profile" 
-                    className="justify-start px-4 py-3 h-auto data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                    className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
                   >
-                    <User className="w-4 h-4 mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                    <User className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                     <span className="font-medium">个人信息</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="categories" 
-                    className="justify-start px-4 py-3 h-auto data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                    className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
                   >
-                    <Layers className="w-4 h-4 mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                    <Layers className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                     <span className="font-medium">分类管理</span>
                   </TabsTrigger>
                   
                   {isAdmin && (
                     <TabsTrigger 
                       value="users" 
-                      className="justify-start px-4 py-3 h-auto data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                      className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
                     >
-                      <Users className="w-4 h-4 mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                      <Users className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                       <span className="font-medium">用户管理</span>
+                    </TabsTrigger>
+                  )}
+                  
+                  {isAdmin && (
+                    <TabsTrigger 
+                      value="api" 
+                      className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                    >
+                      <Key className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                      <span className="font-medium">API 配置</span>
                     </TabsTrigger>
                   )}
                   
                   <TabsTrigger 
                     value="security" 
-                    className="justify-start px-4 py-3 h-auto data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                    className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
                   >
-                    <Shield className="w-4 h-4 mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                    <Shield className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                     <span className="font-medium">账号安全</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="appearance" 
-                    className="justify-start px-4 py-3 h-auto data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                    className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
                   >
-                    <Palette className="w-4 h-4 mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                    <Palette className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                     <span className="font-medium">外观设置</span>
                   </TabsTrigger>
                 </TabsList>
@@ -152,6 +164,22 @@ export default async function SettingsPage({
                     </div>
                     <div className="border-t border-slate-200/60 dark:border-slate-700/60" />
                     <UsersSettings />
+                  </TabsContent>
+                )}
+
+                {isAdmin && (
+                  <TabsContent value="api" className="space-y-6 mt-0 animate-in fade-in-50 duration-300">
+                    <div>
+                      <h3 className="text-xl font-semibold flex items-center gap-2">
+                        <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        API 配置
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        配置外部数据接口的密钥和参数。
+                      </p>
+                    </div>
+                    <div className="border-t border-slate-200/60 dark:border-slate-700/60" />
+                    <ApiSettings />
                   </TabsContent>
                 )}
 

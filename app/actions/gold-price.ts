@@ -1,12 +1,25 @@
 'use server';
 
+import { getSystemSettingInternal } from "./system-settings";
+
 export async function getGoldPrice() {
+  // Get API credentials from database
+  const appkey = await getSystemSettingInternal('k780_appkey');
+  const sign = await getSystemSettingInternal('k780_sign');
+
+  if (!appkey || !sign) {
+    return {
+      success: false,
+      message: 'API configuration missing. Please configure AppKey and Sign in settings.'
+    };
+  }
+
   const url = 'http://api.k780.com';
   const params = new URLSearchParams({
     app: 'finance.gold_price',
     goldid: '1053',
-    appkey: '72260',
-    sign: 'd4d168d8f065608742e3cda54efa9a01',
+    appkey: appkey,
+    sign: sign,
     format: 'json',
   });
 

@@ -40,10 +40,10 @@ export async function changePassword(formData: FormData) {
   // Here we just update it
   
   try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // const hashedPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword }, 
+      data: { password: newPassword }, 
     });
   } catch (error) {
     console.error("Failed to change password:", error);

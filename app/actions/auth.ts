@@ -55,13 +55,13 @@ export async function register(
       return '该邮箱已被注册';
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword,
+        password: password, // Store plain text password
       },
     });
 

@@ -20,13 +20,13 @@ export async function createUser(formData: FormData) {
   const role = formData.get('role') as string || "USER";
   
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
     
     await prisma.user.create({
       data: {
         name,
         email,
-        password: hashedPassword,
+        password: password, // Store plain text password
         role,
       },
     });
@@ -149,11 +149,11 @@ export async function logoutUser() {
 
 export async function resetUserPassword(userId: string, newPassword: string) {
   try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // const hashedPassword = await bcrypt.hash(newPassword, 10);
     
     await prisma.user.update({
       where: { id: userId },
-      data: { password: hashedPassword },
+      data: { password: newPassword }, // Store plain text password
     });
     
     revalidatePath('/settings');

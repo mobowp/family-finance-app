@@ -1,5 +1,7 @@
 'use server';
 
+import { getSystemSettingInternal } from "./system-settings";
+
 export async function getStockPrice(symbol: string) {
   // Handle symbol format: 
   // If input is "00700" or "00700.HK", convert to "hk00700"
@@ -21,12 +23,23 @@ export async function getStockPrice(symbol: string) {
     apiSymbol = `hk${paddedSymbol}`;
   }
 
+  // Get API credentials from database
+  const appkey = await getSystemSettingInternal('k780_appkey');
+  const sign = await getSystemSettingInternal('k780_sign');
+
+  if (!appkey || !sign) {
+    return {
+      success: false,
+      message: 'API configuration missing. Please configure AppKey and Sign in settings.'
+    };
+  }
+
   const url = 'http://api.k780.com';
   const params = new URLSearchParams({
     app: 'finance.stock_realtime',
     stoSym: apiSymbol,
-    appkey: '72260',
-    sign: 'd4d168d8f065608742e3cda54efa9a01',
+    appkey: appkey,
+    sign: sign,
     format: 'json',
   });
 

@@ -20,9 +20,10 @@ import { useToast } from '@/hooks/use-toast';
 interface ResetPasswordDialogProps {
   userId: string;
   userName: string;
+  children?: React.ReactNode;
 }
 
-export function ResetPasswordDialog({ userId, userName }: ResetPasswordDialogProps) {
+export function ResetPasswordDialog({ userId, userName, children }: ResetPasswordDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -65,10 +66,12 @@ export function ResetPasswordDialog({ userId, userName }: ResetPasswordDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-          <KeyRound className="h-4 w-4" />
-          <span className="sr-only">重置密码</span>
-        </Button>
+        {children || (
+          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+            <KeyRound className="h-4 w-4" />
+            <span className="sr-only">重置密码</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

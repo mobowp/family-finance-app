@@ -21,9 +21,10 @@ interface EditUserEmailDialogProps {
   userId: string;
   currentEmail: string;
   userName: string;
+  children?: React.ReactNode;
 }
 
-export function EditUserEmailDialog({ userId, currentEmail, userName }: EditUserEmailDialogProps) {
+export function EditUserEmailDialog({ userId, currentEmail, userName, children }: EditUserEmailDialogProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState(currentEmail);
@@ -54,10 +55,12 @@ export function EditUserEmailDialog({ userId, currentEmail, userName }: EditUser
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
-          <Pencil className="h-4 w-4" />
-          <span className="sr-only">修改邮箱</span>
-        </Button>
+        {children || (
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">修改邮箱</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
