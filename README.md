@@ -9,7 +9,6 @@
 [![Deploy to Server](https://github.com/mobowp/family-finance-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/mobowp/family-finance-app/actions/workflows/deploy.yml)
 
 ## 环境要求
-由于您的环境中未检测到 Node.js，请按照以下步骤配置开发环境：
 
 1. **安装 Node.js** (v18.17 或更高版本)
    - 访问 [Node.js 官网](https://nodejs.org/) 下载并安装 LTS 版本。
