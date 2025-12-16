@@ -1,6 +1,6 @@
 'use server';
 
-import { getSystemSettingInternal } from "./system-settings";
+import { getSystemSettingInternal } from "@/lib/system-settings";
 
 export async function getGoldPrice() {
   // Get API credentials from database

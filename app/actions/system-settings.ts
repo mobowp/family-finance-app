@@ -32,10 +32,3 @@ export async function updateSystemSetting(key: string, value: string) {
   revalidatePath('/settings');
 }
 
-// Internal use only, no auth check (for server-side calls)
-export async function getSystemSettingInternal(key: string) {
-  const setting = await prisma.systemSetting.findUnique({
-    where: { key },
-  });
-  return setting?.value;
-}

@@ -83,14 +83,16 @@ export default async function Home() {
   ].filter(item => item.value > 0);
 
   return (
-    <HomeDashboard 
-      user={user}
-      totalWealth={totalWealth}
-      monthlyIncome={monthlyIncome}
-      monthlyExpense={monthlyExpense}
-      transactions={transactions}
-      chartData={chartData}
-    />
+    <>
+      <HomeDashboard 
+        user={user}
+        totalWealth={totalWealth}
+        monthlyIncome={monthlyIncome}
+        monthlyExpense={monthlyExpense}
+        transactions={transactions}
+        chartData={chartData}
+      />
+    </>
   );
 }
 

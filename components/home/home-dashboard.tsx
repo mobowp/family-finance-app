@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AssetPieChart } from "@/components/home/asset-pie-chart";
+import { LoveQuoteCard } from "@/components/home/love-quote-card";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { useState } from "react";
@@ -90,6 +91,11 @@ export function HomeDashboard({
               </Button>
             </Link>
           </div>
+        </div>
+
+        {/* Love Quote Card (Mobile Only) */}
+        <div className="md:hidden">
+          <LoveQuoteCard />
         </div>
 
         {/* Stats Cards */}
@@ -174,6 +180,11 @@ export function HomeDashboard({
           {/* Sidebar (Right - 4 cols) */}
           <div className="md:col-span-4 space-y-6 flex flex-col">
             
+            {/* Love Quote Card (Desktop Only) */}
+            <div className="hidden md:block">
+              <LoveQuoteCard />
+            </div>
+
             {/* Asset Distribution */}
             <Card className="border-white/20 dark:border-slate-700/30 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl shadow-xl flex-1">
               <CardHeader>
