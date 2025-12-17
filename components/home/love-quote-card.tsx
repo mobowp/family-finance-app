@@ -4,9 +4,14 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, RefreshCw, Calendar, Wallet, Activity, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getDailyLoveQuote, refreshDailyLoveQuote, QuoteResult } from "@/app/actions/love-quote";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+type QuoteResult = {
+  content: string;
+  type: string;
+  daysLoved: number | null;
+};
 
 export function LoveQuoteCard() {
   const [quoteData, setQuoteData] = useState<QuoteResult | null>(null);
@@ -19,10 +24,16 @@ export function LoveQuoteCard() {
 
   async function loadData() {
     try {
-      const data = await getDailyLoveQuote();
+      const response = await fetch('/api/love-quote');
+      const data = await response.json();
       setQuoteData(data);
     } catch (error) {
       console.error("Failed to load quote data", error);
+      setQuoteData({
+        content: "加载失败，请刷新重试",
+        type: "error",
+        daysLoved: null
+      });
     } finally {
       setLoading(false);
     }
@@ -31,10 +42,13 @@ export function LoveQuoteCard() {
   async function handleRefresh() {
     setRefreshing(true);
     try {
-      const newData = await refreshDailyLoveQuote();
-      if (newData) {
+      const response = await fetch('/api/love-quote', { method: 'POST' });
+      const newData = await response.json();
+      if (newData && !newData.error) {
         setQuoteData(newData);
         toast.success("已更新今日内容");
+      } else {
+        toast.error("更新失败");
       }
     } catch (error) {
       toast.error("更新失败");
