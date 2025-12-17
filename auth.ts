@@ -27,8 +27,9 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           });
 
           if (!user) {
-            console.error('User not found in database, forcing logout');
-            return null as any;
+            console.error('User not found in database, session invalid');
+            session.user = {} as any;
+            return session;
           }
 
           session.user.id = token.sub;
@@ -45,6 +46,30 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         }
       }
       return session;
+    },
+    async jwt({ token, user, trigger }) {
+      if (trigger === 'signIn' || trigger === 'signUp') {
+        if (user) {
+          token.sub = user.id;
+        }
+      }
+      
+      if (token.sub) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.sub }
+          });
+          
+          if (!dbUser) {
+            console.error('User not found in JWT callback, invalidating token');
+            return {};
+          }
+        } catch (error) {
+          console.error('JWT callback error:', error);
+        }
+      }
+      
+      return token;
     },
   },
   providers: [

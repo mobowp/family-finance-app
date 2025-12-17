@@ -30,20 +30,22 @@ export function AiChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef(false);
 
-  if (pathname === "/login" || pathname === "/register") {
-    return null;
-  }
-
   useEffect(() => {
     setIsMounted(true);
+    if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password") {
+      return;
+    }
     const cachedAvatar = localStorage.getItem('ai_avatar');
     const cachedModel = localStorage.getItem('ai_model');
     if (cachedAvatar) setAiAvatar(cachedAvatar);
     if (cachedModel) setAiModel(cachedModel);
     loadAiSettings();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
+    if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password") {
+      return;
+    }
     if (isOpen) {
       loadQuickQuestions();
     }
@@ -293,6 +295,10 @@ export function AiChatWidget() {
       { role: 'assistant', content: '你好！我是你的家庭理财助手。我可以帮你分析财务状况、总结花销，或者回答关于理财的问题。' }
     ]);
     toast.success("已开启新对话");
+  }
+
+  if (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password") {
+    return null;
   }
 
   return (

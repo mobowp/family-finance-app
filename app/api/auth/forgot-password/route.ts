@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { email } = await request.json();
+
+    if (!email) {
+      return NextResponse.json(
+        { error: '请提供邮箱地址' },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: '如果该邮箱存在,我们已发送重置密码链接' },
+        { status: 200 }
+      );
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 3600000);
+
+    await prisma.passwordResetToken.create({
+      data: {
+        email,
+        token,
+        expiresAt,
+      },
+    });
+
+    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+
+    console.log('='.repeat(80));
+    console.log('密码重置链接 (MagicLink):');
+    console.log(resetUrl);
+    console.log('='.repeat(80));
+
+    return NextResponse.json(
+      { 
+        message: '如果该邮箱存在,我们已发送重置密码链接',
+        resetUrl 
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return NextResponse.json(
+      { error: '处理请求时发生错误' },
+      { status: 500 }
+    );
+  }
+}

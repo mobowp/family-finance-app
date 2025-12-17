@@ -9,10 +9,13 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       console.log(`[Auth] Path: ${nextUrl.pathname}, LoggedIn: ${isLoggedIn}`);
       // Protect all routes except auth routes and public assets
-      const isAuthRoute = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/register');
+      const isAuthRoute = nextUrl.pathname.startsWith('/login') || 
+                         nextUrl.pathname.startsWith('/register') ||
+                         nextUrl.pathname.startsWith('/forgot-password') ||
+                         nextUrl.pathname.startsWith('/reset-password');
       
       if (isAuthRoute) {
-        if (isLoggedIn) {
+        if (isLoggedIn && !nextUrl.pathname.startsWith('/forgot-password') && !nextUrl.pathname.startsWith('/reset-password')) {
           return Response.redirect(new URL('/', nextUrl));
         }
         return true;
@@ -30,12 +33,6 @@ export const authConfig = {
         session.user.id = token.sub;
       }
       return session;
-    },
-    jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id;
-      }
-      return token;
     }
   },
   providers: [], // Configured in auth.ts

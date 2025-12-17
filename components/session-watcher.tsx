@@ -14,7 +14,7 @@ export function SessionWatcher() {
     if (status === "loading") return;
 
     // 定义不需要鉴权的公开路径
-    const publicPaths = ['/login', '/register'];
+    const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
     const isPublicPath = publicPaths.some(path => pathname?.startsWith(path));
 
     // 如果未登录且当前不在公开页面，强制跳转到登录页

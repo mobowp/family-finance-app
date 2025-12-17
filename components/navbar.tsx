@@ -17,7 +17,7 @@ import { NavbarUser } from "./navbar-user";
 
 export function Navbar() {
   const pathname = usePathname();
-  const isAuthPage = pathname === "/login" || pathname === "/register";
+  const isAuthPage = pathname === "/login" || pathname === "/register" || pathname === "/forgot-password" || pathname === "/reset-password";
 
   const routes = [
     {

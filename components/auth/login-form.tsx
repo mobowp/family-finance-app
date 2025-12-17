@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from '@/components/ui/card';
 import { Mail, Lock, ArrowRight, Wallet } from 'lucide-react';
+import Link from 'next/link';
 
 function LoginButton() {
   const { pending } = useFormStatus();
@@ -75,6 +76,12 @@ export function LoginForm() {
               <Label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 密码
               </Label>
+              <Link 
+                href="/forgot-password"
+                className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+              >
+                忘记密码?
+              </Link>
             </div>
             <div className="relative group">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors">
