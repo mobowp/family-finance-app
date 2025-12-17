@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 export function AiChatWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: '你好！我是你的家庭理财助手。我可以帮你分析财务状况、总结花销，或者回答关于理财的问题。' }
@@ -22,6 +24,10 @@ export function AiChatWidget() {
   const [quickQuestions, setQuickQuestions] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef(false);
+
+  if (pathname === "/login" || pathname === "/register") {
+    return null;
+  }
 
   useEffect(() => {
     if (isOpen) {

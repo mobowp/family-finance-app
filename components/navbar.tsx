@@ -17,6 +17,7 @@ import { NavbarUser } from "./navbar-user";
 
 export function Navbar() {
   const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
   const routes = [
     {
@@ -63,53 +64,59 @@ export function Navbar() {
             </span>
           </Link>
           
-          <div className="flex items-center gap-1.5 bg-slate-100/50 dark:bg-slate-900/50 p-1.5 rounded-full border border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar max-w-[calc(100vw-80px)] sm:max-w-none">
-            {routes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                className={cn(
-                  "relative flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium rounded-full transition-all duration-300 whitespace-nowrap",
-                  route.active 
-                    ? "text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-black/5 dark:ring-white/10" 
-                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
-                )}
-              >
-                <route.icon className={cn("h-5 w-5 transition-transform duration-300", route.active && "scale-110")} />
-                {route.label}
-              </Link>
-            ))}
-          </div>
+          {!isAuthPage && (
+            <div className="flex items-center gap-1.5 bg-slate-100/50 dark:bg-slate-900/50 p-1.5 rounded-full border border-slate-200/50 dark:border-slate-800/50 overflow-x-auto no-scrollbar max-w-[calc(100vw-80px)] sm:max-w-none">
+              {routes.map((route) => (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "relative flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium rounded-full transition-all duration-300 whitespace-nowrap",
+                    route.active 
+                      ? "text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 shadow-sm ring-1 ring-black/5 dark:ring-white/10" 
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
+                  )}
+                >
+                  <route.icon className={cn("h-5 w-5 transition-transform duration-300", route.active && "scale-110")} />
+                  {route.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
         
-        <div className="flex items-center gap-3">
-           <Button variant="ghost" size="icon" className="hidden text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-             <Menu className="h-5 w-5" />
-           </Button>
-           <NavbarUser />
-        </div>
+        {!isAuthPage && (
+          <div className="flex items-center gap-3">
+             <Button variant="ghost" size="icon" className="hidden text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+               <Menu className="h-5 w-5" />
+             </Button>
+             <NavbarUser />
+          </div>
+        )}
       </div>
       
       {/* Mobile Nav - Glassmorphism Bottom Bar - Hidden as requested */}
-      <div className="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden safe-area-bottom">
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-2 grid grid-cols-4 gap-1">
-           {routes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                className={cn(
-                  "flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-[10px] font-medium transition-all duration-300",
-                  route.active 
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 scale-105" 
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50"
-                )}
-              >
-                <route.icon className={cn("h-5 w-5", route.active && "fill-current")} />
-                {route.label}
-              </Link>
-            ))}
+      {!isAuthPage && (
+        <div className="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden safe-area-bottom">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-2 grid grid-cols-4 gap-1">
+             {routes.map((route) => (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 p-2 rounded-xl text-[10px] font-medium transition-all duration-300",
+                    route.active 
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 scale-105" 
+                      : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50"
+                  )}
+                >
+                  <route.icon className={cn("h-5 w-5", route.active && "fill-current")} />
+                  {route.label}
+                </Link>
+              ))}
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 }
