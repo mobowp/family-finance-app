@@ -28,5 +28,8 @@ jobs:
             # --build: 强制重新构建镜像
             docker compose up -d --build
             
-            # 4. 清理未使用的镜像 (可选，防止磁盘占满)
+            # 4. 执行数据库迁移 (确保数据库结构最新)
+            docker compose exec -T app npx prisma migrate deploy
+            
+            # 5. 清理未使用的镜像 (可选，防止磁盘占满)
             docker image prune -f
