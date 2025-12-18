@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig = {
+  secret: process.env.AUTH_SECRET,
   pages: {
     signIn: '/login',
   },
@@ -15,6 +16,13 @@ export const authConfig = {
                          nextUrl.pathname.startsWith('/reset-password');
       
       if (isAuthRoute) {
+        if (isLoggedIn) {
+          // 如果已经在首页，不要重定向，避免循环
+          if (nextUrl.pathname === '/') {
+            return true;
+          }
+          return Response.redirect(new URL('/', nextUrl));
+        }
         return true;
       }
       

@@ -36,7 +36,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className={inter.className}>
         <Providers>
-          <SessionWatcher />
+          {/* <SessionWatcher /> */}
           <Navbar />
           {children}
           <AiChatWidget />

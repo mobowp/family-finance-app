@@ -16,7 +16,8 @@ export default async function Home() {
   });
 
   if (!userRecord) {
-    redirect('/login');
+    // 如果数据库中找不到用户，说明 Session 是旧的，强制登出
+    redirect('/api/auth/signout');
   }
 
   const familyId = userRecord.familyId || userRecord.id;
