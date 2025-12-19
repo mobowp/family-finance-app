@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>清理 Cookies</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            background: #0070f3;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #0051cc;
+        }
+        .success {
+            color: green;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🍪 清理 Cookies</h1>
+    <div class="info">
+        <p><strong>如果遇到 431 错误</strong></p>
+        <p>(Request Header Fields Too Large)</p>
+        <p>点击下面的按钮清理所有 Cookies</p>
+    </div>
+    <div id="cookie-info" class="info" style="background: #fff3cd; border: 1px solid #ffc107;"></div>
+    <button onclick="clearCookies()">清理所有 Cookies</button>
+    <button onclick="location.href='/'">返回首页</button>
+    <div id="message"></div>
+
+    <script>
+        function showCookieInfo() {
+            const cookies = document.cookie.split(";").filter(c => c.trim());
+            const cookieSize = new Blob([document.cookie]).size;
+            const info = document.getElementById('cookie-info');
+            
+            info.innerHTML = `
+                <p><strong>当前 Cookies 数量：</strong>${cookies.length}</p>
+                <p><strong>总大小：</strong>${cookieSize} 字节 ${cookieSize > 4096 ? '⚠️ 过大！' : '✅'}</p>
+                <details style="margin-top: 10px; text-align: left;">
+                     <summary style="cursor: pointer;">查看详情</summary>
+                     <pre style="font-size: 12px; overflow-x: auto; max-height: 200px;">${cookies.map(c => c.trim()).join('\n')}</pre>
+                 </details>
+            `;
+        }
+        
+        function clearCookies() {
+            const cookies = document.cookie.split(";");
+            let cleared = 0;
+            
+            for (let i = 0; i < cookies.length; i++) {
+                 const cookie = cookies[i];
+                 const eqPos = cookie.indexOf("=");
+                 const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                 const trimmedName = name.trim();
+                
+                document.cookie = trimmedName + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                document.cookie = trimmedName + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+                cleared++;
+            }
+            
+            document.getElementById('message').innerHTML = 
+                `<p class="success">✅ 已清理 ${cleared} 个 Cookies！<br><br>请点击"返回首页"重新登录</p>`;
+            
+            setTimeout(showCookieInfo, 500);
+        }
+        
+        window.onload = showCookieInfo;
+    </script>
+</body>
+</html>

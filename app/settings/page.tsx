@@ -8,6 +8,7 @@ import { CategoriesSettings } from "@/components/settings/categories-settings";
 import { AssetTypeSettings } from "@/components/settings/asset-type-settings";
 import { UsersSettings } from "@/components/settings/users-settings";
 import { ApiSettings } from "@/components/settings/api-settings";
+import { DataBackup } from "@/components/settings/data-backup";
 import { redirect } from "next/navigation";
 import { 
   User, 
@@ -16,7 +17,8 @@ import {
   Shield, 
   Palette, 
   Settings as SettingsIcon,
-  Key
+  Key,
+  Database
 } from "lucide-react";
 
 export default async function SettingsPage({
@@ -110,6 +112,14 @@ export default async function SettingsPage({
                   >
                     <Palette className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
                     <span className="font-medium">外观设置</span>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="backup" 
+                    className="flex-shrink-0 justify-center lg:justify-start px-3 py-2 lg:px-4 lg:py-3 h-auto whitespace-nowrap data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-900/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all rounded-lg group"
+                  >
+                    <Database className="w-4 h-4 mr-2 lg:mr-3 text-slate-500 group-data-[state=active]:text-blue-600 dark:group-data-[state=active]:text-blue-400" />
+                    <span className="font-medium">数据备份</span>
                   </TabsTrigger>
                 </TabsList>
               </CardContent>
@@ -210,6 +220,20 @@ export default async function SettingsPage({
                   </div>
                   <div className="border-t border-slate-200/60 dark:border-slate-700/60" />
                   <AppearanceForm />
+                </TabsContent>
+
+                <TabsContent value="backup" className="space-y-6 mt-0 animate-in fade-in-50 duration-300">
+                  <div>
+                    <h3 className="text-xl font-semibold flex items-center gap-2">
+                <Database className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      数据备份与恢复
+                    </h3>
+             <p className="text-sm text-muted-foreground mt-1">
+                      导出所有数据或从备份文件恢复，确保数据安全。
+                    </p>
+                  </div>
+                  <div className="border-t border-slate-200/60 dark:border-slate-700/60" />
+                  <DataBackup />
                 </TabsContent>
               </CardContent>
             </Card>

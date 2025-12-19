@@ -86,7 +86,9 @@ export async function updateAccount(id: string, formData: FormData) {
       };
 
       const currentUser = await getCurrentUser();
-      if (currentUser?.role === 'ADMIN' && userId) {
+      const userIdChanged = currentUser?.role === 'ADMIN' && userId && userId !== '';
+      
+      if (userIdChanged) {
         updateData.userId = userId;
       }
 
@@ -94,6 +96,13 @@ export async function updateAccount(id: string, formData: FormData) {
         where: { id },
         data: updateData,
       });
+
+      if (userIdChanged) {
+        await tx.account.updateMany({
+          where: { parentId: id },
+          data: { userId: userId }
+        });
+      }
 
       for (const [childId, data] of Object.entries(childUpdates)) {
         await tx.account.update({

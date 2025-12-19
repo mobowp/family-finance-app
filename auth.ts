@@ -39,13 +39,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       }
       return session;
     },
-    async jwt({ token, user, trigger }) {
-      if (trigger === 'signIn' || trigger === 'signUp') {
-        if (user) {
-          token.sub = user.id;
-        }
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          sub: user.id,
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60),
+        };
       }
-      
       return token;
     },
   },
