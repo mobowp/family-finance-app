@@ -37,12 +37,15 @@ export async function getFrequentCategoriesAndAccounts() {
     }
   });
 
-  // 4. 获取所有分类和账户
+  // 4. 获取所有分类和当前用户/家庭的账户
   const [allCategories, allAccounts] = await Promise.all([
     prisma.category.findMany(),
     prisma.account.findMany({
       where: {
-        userId: user.id
+        OR: [
+          { userId: user.id },
+          { userId: familyId }
+        ]
       },
       include: { children: true }
     })
