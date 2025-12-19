@@ -1,12 +1,10 @@
 'use client';
 
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TransactionStatsCards } from "@/components/transaction-stats-cards";
 import { TransactionList } from "@/components/transaction-list";
 import { TransactionFilters } from "@/components/transaction-filters";
+import { useVisibilityState } from "@/hooks/use-visibility-state";
 
 interface TransactionPageWrapperProps {
   currentExpense: number;
@@ -35,26 +33,10 @@ export function TransactionPageWrapper({
   categories,
   accounts
 }: TransactionPageWrapperProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const { isVisible, toggleVisibility } = useVisibilityState();
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsVisible(!isVisible)}
-          className="rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"
-        >
-          {isVisible ? (
-            <Eye className="h-5 w-5 text-muted-foreground" />
-          ) : (
-            <EyeOff className="h-5 w-5 text-muted-foreground" />
-          )}
-        </Button>
-        <h2 className="text-lg font-semibold">交易数据</h2>
-      </div>
-
       <TransactionStatsCards 
         currentExpense={currentExpense}
         currentIncome={currentIncome}

@@ -18,7 +18,7 @@ import { AssetPieChart } from "@/components/home/asset-pie-chart";
 import { LoveQuoteCard } from "@/components/home/love-quote-card";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
-import { useState } from "react";
+import { useVisibilityState } from "@/hooks/use-visibility-state";
 
 interface HomeDashboardProps {
   user: any;
@@ -37,7 +37,7 @@ export function HomeDashboard({
   transactions,
   chartData
 }: HomeDashboardProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const { isVisible, toggleVisibility } = useVisibilityState();
   const now = new Date();
 
   const formatCurrency = (value: number) => {
@@ -65,7 +65,7 @@ export function HomeDashboard({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsVisible(!isVisible)}
+                onClick={toggleVisibility}
                 className="rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"
               >
                 {isVisible ? (

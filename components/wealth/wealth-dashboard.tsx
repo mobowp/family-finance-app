@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountList } from "@/components/wealth/account-list";
 import { AssetList } from "@/components/wealth/asset-list";
 import { Button } from "@/components/ui/button";
+import { useVisibilityState } from "@/hooks/use-visibility-state";
 
 interface WealthDashboardProps {
   totalWealth: number;
@@ -29,7 +29,7 @@ export function WealthDashboard({
   users,
   defaultTab
 }: WealthDashboardProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const { isVisible, toggleVisibility } = useVisibilityState();
 
   const formatCurrency = (value: number) => {
     if (!isVisible) return '******';
@@ -44,7 +44,7 @@ export function WealthDashboard({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsVisible(!isVisible)}
+            onClick={toggleVisibility}
             className="rounded-full hover:bg-slate-200 dark:hover:bg-slate-800"
           >
             {isVisible ? (
