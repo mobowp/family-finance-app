@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
-import Nodemailer from 'next-auth/providers/nodemailer';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -18,6 +18,7 @@ async function getUser(email: string) {
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
+  adapter: PrismaAdapter(prisma),
   callbacks: {
     ...authConfig.callbacks,
     async session({ session, token }) {
