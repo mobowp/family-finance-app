@@ -23,15 +23,13 @@ export default async function WealthPage({
     ]
   };
   
-  // Fetch accounts
-  let accounts: any[] = [];
-  try {
-     accounts = await prisma.account.findMany({
-       where: { 
-         parentId: null,
-         user: userFilter
-       },
-       include: { 
+  const [accounts, users, assets, assetTypes] = await Promise.all([
+    prisma.account.findMany({
+      where: { 
+        parentId: null,
+        user: userFilter
+      },
+      include: { 
         children: true,
         user: {
           select: {
@@ -39,46 +37,42 @@ export default async function WealthPage({
             email: true
           }
         }
-       }
-     });
-  } catch (e) {
-     console.error(e);
-  }
-
-  // Always fetch users for filtering, regardless of role
-  const users = await prisma.user.findMany({
-    where: {
-      OR: [
-        { id: currentUser.id },
-        { familyId: familyId }
-      ]
-    },
-    select: { id: true, name: true, email: true }
-  });
-
-  // Fetch assets
-  const assets = await prisma.asset.findMany({
-    where: {
-      user: userFilter
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true
+      }
+    }).catch((e: any) => {
+      console.error(e);
+      return [];
+    }),
+    prisma.user.findMany({
+      where: {
+        OR: [
+          { id: currentUser.id },
+          { familyId: familyId }
+        ]
+      },
+      select: { id: true, name: true, email: true }
+    }),
+    prisma.asset.findMany({
+      where: {
+        user: userFilter
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
         }
       }
-    }
-  });
-  const assetTypes = await prisma.assetType.findMany();
+    }),
+    prisma.assetType.findMany()
+  ]);
 
-  // Calculate totals
-  const totalAccountBalance = accounts.reduce((sum, account) => {
+  const totalAccountBalance = accounts.reduce((sum: number, account: any) => {
     const childBalance = account.children?.reduce((cSum: number, child: any) => cSum + child.balance, 0) || 0;
     return sum + account.balance + childBalance;
   }, 0);
 
-  const totalAssetValue = assets.reduce((sum, asset) => {
+  const totalAssetValue = assets.reduce((sum: number, asset: any) => {
     const price = asset.marketPrice || asset.costPrice;
     return sum + (price * asset.quantity);
   }, 0);

@@ -28,6 +28,8 @@ model User {
   assets       Asset[]
   budgets      Budget[]
   sessions     Session[]
+
+  @@index([familyId])
 }
 
 model Session {
@@ -65,6 +67,10 @@ model Account {
 
   transactions Transaction[]
   incomingTransfers Transaction[] @relation("TransferTarget")
+
+  @@index([userId])
+  @@index([parentId])
+  @@index([userId, parentId])
 }
 
 model Category {
@@ -105,6 +111,9 @@ model Transaction {
   updatedAt   DateTime @updatedAt
 
   @@index([userId, date(sort: Desc)])
+  @@index([userId, type, date(sort: Desc)])
+  @@index([userId, categoryId, date(sort: Desc)])
+  @@index([userId, accountId, date(sort: Desc)])
   @@index([date])
   @@index([type])
   @@index([categoryId])
@@ -131,6 +140,10 @@ model Asset {
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([userId, type])
 }
 
 model Budget {
