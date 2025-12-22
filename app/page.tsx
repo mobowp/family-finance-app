@@ -82,6 +82,28 @@ export default async function Home() {
     .filter(t => t.type === 'EXPENSE')
     .reduce((sum, t) => sum + t.amount, 0);
 
+  // Daily Stats
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  const dailyTransactions = await prisma.transaction.findMany({
+    where: {
+      userId: userRecord.id,
+      date: {
+        gte: startOfToday,
+        lt: startOfTomorrow
+      }
+    }
+  });
+
+  const dailyIncome = dailyTransactions
+    .filter(t => t.type === 'INCOME')
+    .reduce((sum, t) => sum + t.amount, 0);
+    
+  const dailyExpense = dailyTransactions
+    .filter(t => t.type === 'EXPENSE')
+    .reduce((sum, t) => sum + t.amount, 0);
+
   // Asset Distribution for Chart
   const accountTypeMap: Record<string, number> = {};
   accounts.forEach(acc => {
@@ -111,6 +133,8 @@ export default async function Home() {
         totalWealth={totalWealth}
         monthlyIncome={monthlyIncome}
         monthlyExpense={monthlyExpense}
+        dailyIncome={dailyIncome}
+        dailyExpense={dailyExpense}
         transactions={transactions}
         chartData={chartData}
       />

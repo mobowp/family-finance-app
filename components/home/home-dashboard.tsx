@@ -25,6 +25,8 @@ interface HomeDashboardProps {
   totalWealth: number;
   monthlyIncome: number;
   monthlyExpense: number;
+  dailyIncome: number;
+  dailyExpense: number;
   transactions: any[];
   chartData: { name: string; value: number }[];
 }
@@ -34,6 +36,8 @@ export function HomeDashboard({
   totalWealth,
   monthlyIncome,
   monthlyExpense,
+  dailyIncome,
+  dailyExpense,
   transactions,
   chartData
 }: HomeDashboardProps) {
@@ -99,13 +103,27 @@ export function HomeDashboard({
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <StatsCard 
             title="总资产" 
             value={formatCurrency(totalWealth)}
             icon={<Wallet className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
             trend="总财富"
             trendColor="text-blue-600"
+          />
+          <StatsCard 
+            title="今日收入" 
+            value={formatCurrency(dailyIncome)}
+            icon={<TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
+            trend="今日累计"
+            trendColor="text-emerald-600"
+          />
+          <StatsCard 
+            title="今日支出" 
+            value={formatCurrency(dailyExpense)}
+            icon={<TrendingDown className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+            trend="今日累计"
+            trendColor="text-orange-600"
           />
           <StatsCard 
             title="本月收入" 
