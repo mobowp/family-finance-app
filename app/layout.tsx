@@ -11,7 +11,7 @@ import { SessionWatcher } from "@/components/session-watcher";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "家庭理财管理系统",
+  title: "理财猫-你的家庭记账好帮手",
   description: "全能家庭财务管家",
 };
 
