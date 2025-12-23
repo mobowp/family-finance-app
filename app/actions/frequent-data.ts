@@ -7,7 +7,16 @@ export async function getFrequentCategoriesAndAccounts() {
   const user = await getCurrentUser();
   if (!user) return { categories: [], accounts: [] };
 
-  const familyId = (user as any).familyId || user.id;
+  // 确定查询账户的用户范围
+  let accountUserIds = [user.id];
+  if ((user as any).familyId) {
+      const familyUsers = await prisma.user.findMany({
+          where: { familyId: (user as any).familyId },
+          select: { id: true }
+      });
+      accountUserIds = familyUsers.map(u => u.id);
+  }
+
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -37,17 +46,17 @@ export async function getFrequentCategoriesAndAccounts() {
     }
   });
 
-  // 4. 获取所有分类和当前用户/家庭的账户
+  // 4. 获取所有分类和家庭内的账户
   const [allCategories, allAccounts] = await Promise.all([
     prisma.category.findMany(),
     prisma.account.findMany({
       where: {
-        OR: [
-          { userId: user.id },
-          { userId: familyId }
-        ]
+        userId: { in: accountUserIds }
       },
-      include: { children: true }
+      include: { 
+        children: true,
+        user: { select: { name: true, id: true } }
+      }
     })
   ]);
 

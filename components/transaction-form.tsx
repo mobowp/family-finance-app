@@ -17,7 +17,13 @@ import { CornerDownRight, Loader2 } from "lucide-react";
 interface TransactionFormProps {
   action: (formData: FormData) => Promise<void>;
   categories: { id: string; name: string; type: string }[];
-  accounts: { id: string; name: string; balance: number; parentId?: string | null }[];
+  accounts: { 
+    id: string; 
+    name: string; 
+    balance: number; 
+    parentId?: string | null;
+    user?: { name: string | null; id: string } | null;
+  }[];
   defaultValues?: {
     type: string;
     amount: number;
@@ -174,6 +180,11 @@ export function TransactionForm({
                       <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
                     )}
                     <span>{account.name}</span>
+                    {account.user?.name && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        ({account.user.name})
+                      </span>
+                    )}
                     <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
                   </div>
                 </SelectItem>
@@ -216,6 +227,11 @@ export function TransactionForm({
                         <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
                       )}
                       <span>{account.name}</span>
+                      {account.user?.name && (
+                        <span className="text-xs text-muted-foreground ml-1">
+                          ({account.user.name})
+                        </span>
+                      )}
                       <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
                     </div>
                   </SelectItem>
