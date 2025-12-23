@@ -8,11 +8,14 @@ import React, { useState, useTransition } from "react";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CornerDownRight, Loader2 } from "lucide-react";
+import { CornerDownRight, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface TransactionFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -44,6 +47,8 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const [selectedType, setSelectedType] = useState(defaultValues?.type || "EXPENSE");
   const [isPending, startTransition] = useTransition();
+  const [showAllAccounts, setShowAllAccounts] = useState(false);
+  const [showAllTargetAccounts, setShowAllTargetAccounts] = useState(false);
 
   const filteredCategories = categories.filter(cat => cat.type === selectedType);
 
@@ -79,6 +84,8 @@ export function TransactionForm({
   };
 
   const flattenedAccounts = getFlattenedAccounts();
+  const topAccounts = flattenedAccounts.slice(0, 4);
+  const restAccounts = flattenedAccounts.slice(4);
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
@@ -168,27 +175,85 @@ export function TransactionForm({
               <SelectValue placeholder="选择账户" />
             </SelectTrigger>
             <SelectContent>
-              {flattenedAccounts.map((account) => (
-                <SelectItem 
-                  key={account.id} 
-                  value={account.id} 
-                  className={account.depth === 0 ? "font-medium" : ""}
-                  style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
-                >
-                  <div className="flex items-center w-full gap-2">
-                    {account.depth > 0 && (
-                      <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
-                    )}
-                    <span>{account.name}</span>
-                    {account.user?.name && (
-                      <span className="text-xs text-muted-foreground ml-1">
-                        ({account.user.name})
-                      </span>
-                    )}
-                    <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
-                  </div>
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectLabel>常用账户</SelectLabel>
+                {topAccounts.map((account) => (
+                  <SelectItem 
+                    key={account.id} 
+                    value={account.id} 
+                    className={account.depth === 0 ? "font-medium" : ""}
+                    style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
+                  >
+                    <div className="flex items-center w-full gap-2">
+                      {account.depth > 0 && (
+                        <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                      )}
+                      <span>{account.name}</span>
+                      {account.user?.name && (
+                        <span className="text-xs text-muted-foreground ml-1">
+                          ({account.user.name})
+                        </span>
+                      )}
+                      <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+
+              {restAccounts.length > 0 && (
+                <>
+                  {!showAllAccounts ? (
+                    <div 
+                      className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAllAccounts(true);
+                      }}
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                      显示更多账户 ({restAccounts.length})
+                    </div>
+                  ) : (
+                    <>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>其他账户</SelectLabel>
+                        {restAccounts.map((account) => (
+                          <SelectItem 
+                            key={account.id} 
+                            value={account.id} 
+                            className={account.depth === 0 ? "font-medium" : ""}
+                            style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
+                          >
+                            <div className="flex items-center w-full gap-2">
+                              {account.depth > 0 && (
+                                <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                              )}
+                              <span>{account.name}</span>
+                              {account.user?.name && (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  ({account.user.name})
+                                </span>
+                              )}
+                              <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                      <div 
+                        className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t sticky bottom-0 bg-popover"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowAllAccounts(false);
+                        }}
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                        收起更多账户
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </SelectContent>
           </Select>
         )}
@@ -215,27 +280,85 @@ export function TransactionForm({
                 <SelectValue placeholder="选择转入账户" />
               </SelectTrigger>
               <SelectContent>
-                {flattenedAccounts.map((account) => (
-                  <SelectItem 
-                    key={account.id} 
-                    value={account.id} 
-                    className={account.depth === 0 ? "font-medium" : ""}
-                    style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
-                  >
-                    <div className="flex items-center w-full gap-2">
-                      {account.depth > 0 && (
-                        <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
-                      )}
-                      <span>{account.name}</span>
-                      {account.user?.name && (
-                        <span className="text-xs text-muted-foreground ml-1">
-                          ({account.user.name})
-                        </span>
-                      )}
-                      <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
-                    </div>
-                  </SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>常用账户</SelectLabel>
+                  {topAccounts.map((account) => (
+                    <SelectItem 
+                      key={account.id} 
+                      value={account.id} 
+                      className={account.depth === 0 ? "font-medium" : ""}
+                      style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
+                    >
+                      <div className="flex items-center w-full gap-2">
+                        {account.depth > 0 && (
+                          <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                        )}
+                        <span>{account.name}</span>
+                        {account.user?.name && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            ({account.user.name})
+                          </span>
+                        )}
+                        <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+
+                {restAccounts.length > 0 && (
+                  <>
+                    {!showAllTargetAccounts ? (
+                      <div 
+                        className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowAllTargetAccounts(true);
+                        }}
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                        显示更多账户 ({restAccounts.length})
+                      </div>
+                    ) : (
+                      <>
+                        <SelectSeparator />
+                        <SelectGroup>
+                          <SelectLabel>其他账户</SelectLabel>
+                          {restAccounts.map((account) => (
+                            <SelectItem 
+                              key={account.id} 
+                              value={account.id} 
+                              className={account.depth === 0 ? "font-medium" : ""}
+                              style={{ paddingLeft: account.depth > 0 ? `${account.depth * 1.5 + 0.5}rem` : undefined }}
+                            >
+                              <div className="flex items-center w-full gap-2">
+                                {account.depth > 0 && (
+                                  <CornerDownRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                                )}
+                                <span>{account.name}</span>
+                                {account.user?.name && (
+                                  <span className="text-xs text-muted-foreground ml-1">
+                                    ({account.user.name})
+                                  </span>
+                                )}
+                                <span className="text-muted-foreground text-xs ml-auto">¥{account.balance}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                        <div 
+                          className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t sticky bottom-0 bg-popover"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowAllTargetAccounts(false);
+                          }}
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                          收起更多账户
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
               </SelectContent>
             </Select>
           )}
