@@ -16,10 +16,12 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { createUser } from "@/app/actions/user";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 export function CreateUserDialog() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -37,10 +39,23 @@ export function CreateUserDialog() {
         </DialogHeader>
         <form 
           action={async (formData) => {
-            setIsLoading(true);
-            await createUser(formData);
-            setIsLoading(false);
-            setOpen(false);
+            try {
+              setIsLoading(true);
+              await createUser(formData);
+              toast({
+                title: "创建成功",
+                description: "用户已成功创建",
+              });
+              setOpen(false);
+            } catch (error) {
+              toast({
+                title: "创建失败",
+                description: error instanceof Error ? error.message : "发生未知错误",
+                variant: "destructive",
+              });
+            } finally {
+              setIsLoading(false);
+            }
           }}
           className="space-y-4 py-4"
         >

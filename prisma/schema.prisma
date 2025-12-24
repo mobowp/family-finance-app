@@ -28,6 +28,7 @@ model User {
   assets       Asset[]
   budgets      Budget[]
   sessions     Session[]
+  physicalItems PhysicalItem[]
 
   @@index([familyId])
 }
@@ -144,6 +145,26 @@ model Asset {
   @@index([userId])
   @@index([type])
   @@index([userId, type])
+}
+
+model PhysicalItem {
+  id          String   @id @default(uuid())
+  name        String
+  icon        String   // Predefined icon name (tv, laptop, etc.)
+  image       String?  // Base64 image
+  price       Float
+  purchaseDate DateTime
+  warrantyDate DateTime?
+  status      String   @default("ACTIVE") // ACTIVE, RETIRED
+  note        String?
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Budget {

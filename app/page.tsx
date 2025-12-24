@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { HomeDashboard } from "@/components/home/home-dashboard";
@@ -17,7 +17,9 @@ export default async function Home() {
 
   if (!userRecord) {
     // 如果数据库中找不到用户，说明 Session 是旧的，强制登出
-    redirect('/api/auth/signout');
+    await signOut({ redirectTo: '/login' });
+    // signOut should handle the redirect, but to satisfy TypeScript or in case it falls through:
+    return null; 
   }
 
   const [accounts, assets, transactions] = await Promise.all([

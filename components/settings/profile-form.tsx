@@ -9,18 +9,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Upload } from "lucide-react";
 
 const PRESET_AVATARS = [
-  // Men
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Alexander",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Caleb",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Ryan",
-  // Women
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Jessica",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Bella",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Sophie",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Willow",
-  "https://api.dicebear.com/7.x/adventurer/svg?seed=Andrea",
+  "/avatars/avatar-1.svg",
+  "/avatars/avatar-2.svg",
+  "/avatars/avatar-3.svg",
+  "/avatars/avatar-4.svg",
+  "/avatars/avatar-5.svg",
+  "/avatars/avatar-6.svg",
+  "/avatars/avatar-7.svg",
+  "/avatars/avatar-8.svg",
+  "/avatars/avatar-9.svg",
+  "/avatars/avatar-10.svg",
 ];
 
 export function ProfileForm({ user }: { user: any }) {

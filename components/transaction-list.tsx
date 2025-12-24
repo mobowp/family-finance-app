@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, Trash2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowRightLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -158,12 +158,19 @@ export function TransactionList({
                     </td>
                     <td className="p-6 text-foreground/80">{tx.account.name}</td>
                     <td className="p-6 text-right font-mono font-medium">
-                      <div className={`flex items-center justify-end gap-1 ${tx.type === 'EXPENSE' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                        {tx.type === 'EXPENSE' ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                      <div className={`flex items-center justify-end gap-1 ${
+                        tx.type === 'EXPENSE' ? 'text-red-600 dark:text-red-400' : 
+                        tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 
+                        'text-blue-600 dark:text-blue-400'
+                      }`}>
+                        {tx.type === 'EXPENSE' && <ArrowDownLeft className="h-4 w-4" />}
+                        {tx.type === 'INCOME' && <ArrowUpRight className="h-4 w-4" />}
+                        {tx.type === 'TRANSFER' && <ArrowRightLeft className="h-4 w-4" />}
                         <span className="text-base">
                           {isVisible ? (
                             <>
-                              {tx.type === 'EXPENSE' ? '-' : '+'}
+                              {tx.type === 'EXPENSE' && '-'}
+                              {tx.type === 'INCOME' && '+'}
                               {tx.amount.toFixed(2)}
                             </>
                           ) : '******'}

@@ -128,6 +128,24 @@ export async function POST(request: Request) {
         }
       }
 
+      if (data.physicalItems?.length > 0) {
+        for (const item of data.physicalItems) {
+          await tx.physicalItem.create({
+            data: {
+              name: item.name,
+              icon: item.icon,
+              image: item.image,
+              price: item.price,
+              purchaseDate: new Date(item.purchaseDate),
+              warrantyDate: item.warrantyDate ? new Date(item.warrantyDate) : null,
+              status: item.status,
+              note: item.note,
+              userId: oldToNewIdMap.users[item.userId] || currentUser.id
+            }
+          });
+        }
+      }
+
     });
 
     return NextResponse.json({ success: true, message: '数据导入成功' });

@@ -35,6 +35,7 @@ export default async function CreateTransactionPage() {
               action={createTransaction}
               categories={categories}
               accounts={accounts}
+              currentUserId={userId}
             />
           </CardContent>
         </Card>

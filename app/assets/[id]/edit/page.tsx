@@ -8,10 +8,11 @@ import { Trash2 } from "lucide-react";
 import { EditAssetForm } from "@/components/wealth/edit-asset-form";
 import { getCurrentUser } from "@/app/actions/user";
 
-export default async function EditAssetPage({ params }: { params: { id: string } }) {
+export default async function EditAssetPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const assetTypes = await getAssetTypes();
   const asset = await prisma.asset.findUnique({
-    where: { id: params.id },
+    where: { id: id },
   });
 
   if (!asset) {

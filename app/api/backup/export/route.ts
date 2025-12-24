@@ -19,8 +19,8 @@ export async function GET() {
 
     const familyId = user.familyId || user.id;
 
-    const [users, categories, accounts, transactions, assetTypes, assets] = await Promise.all([
-prisma.user.findMany({
+    const [users, categories, accounts, transactions, assetTypes, assets, physicalItems] = await Promise.all([
+      prisma.user.findMany({
         where: { OR: [{ id: familyId }, { familyId: familyId }] },
         select: { id: true, name: true, email: true, role: true, image: true, familyId: true, createdAt: true }
       }),
@@ -37,6 +37,10 @@ prisma.user.findMany({
       prisma.asset.findMany({
         where: { user: { OR: [{ id: familyId }, { familyId: familyId }] } },
         include: { user: { select: { id: true, name: true, email: true } } }
+      }),
+      prisma.physicalItem.findMany({
+        where: { user: { OR: [{ id: familyId }, { familyId: familyId }] } },
+        include: { user: { select: { id: true, name: true, email: true } } }
       })
     ]);
 
@@ -44,7 +48,7 @@ prisma.user.findMany({
       version: '1.0',
       exportDate: new Date().toISOString(),
       exportedBy: { id: user.id, name: user.name, email: user.email },
-      data: { users, categories, accounts, transactions, assetTypes, assets }
+      data: { users, categories, accounts, transactions, assetTypes, assets, physicalItems }
     };
 
     return NextResponse.json(backupData);

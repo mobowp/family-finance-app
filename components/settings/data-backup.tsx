@@ -149,7 +149,7 @@ export function DataBackup() {
         </div>
         
         <div className="text-sm text-muted-foreground space-y-2">
-          <p>• 导出功能会将所有交易记录、账户、资产、分类等数据保存为 JSON 文件</p>
+          <p>• 导出功能会将所有交易记录、账户、资产、分类、归物等数据保存为 JSON 文件</p>
           <p>• 导入功能会从备份文件恢复数据，适用于新账户配置或数据迁移</p>
           <p>• 建议定期备份数据以防数据丢失</p>
         </div>

@@ -30,31 +30,13 @@ interface AvatarImageProps extends Omit<React.ComponentPropsWithoutRef<typeof Av
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   AvatarImageProps
->(({ className, src, alt = "Avatar", priority = false, ...props }, ref) => {
-  if (!src) {
-    return null;
-  }
-
-  return (
-    <AvatarPrimitive.Image
-      ref={ref}
-      className={cn("aspect-square h-full w-full", className)}
-      asChild
-      {...props}
-    >
-      <Image 
-        src={src}
-        alt={alt}
-        fill
-        sizes="(max-width: 768px) 40px, 40px"
-        className="object-cover"
-        loading={priority ? undefined : "lazy"}
-        quality={85}
-        unoptimized={src.startsWith('http') && !src.includes(process.env.NEXT_PUBLIC_APP_URL || '')}
-      />
-    </AvatarPrimitive.Image>
-  );
-})
+>(({ className, ...props }, ref) => (
+  <AvatarPrimitive.Image
+    ref={ref}
+    className={cn("aspect-square h-full w-full object-cover", className)}
+    {...props}
+  />
+))
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.forwardRef<

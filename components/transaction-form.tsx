@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -27,11 +27,13 @@ interface TransactionFormProps {
     parentId?: string | null;
     user?: { name: string | null; id: string } | null;
   }[];
+  currentUserId?: string;
   defaultValues?: {
     type: string;
     amount: number;
     categoryId: string | null;
     accountId: string;
+    targetAccountId?: string | null;
     date: Date;
     description: string | null;
   };
@@ -42,6 +44,7 @@ export function TransactionForm({
   action, 
   categories, 
   accounts, 
+  currentUserId,
   defaultValues,
   submitLabel = "保存"
 }: TransactionFormProps) {
@@ -49,12 +52,47 @@ export function TransactionForm({
   const [isPending, startTransition] = useTransition();
   const [showAllAccounts, setShowAllAccounts] = useState(false);
   const [showAllTargetAccounts, setShowAllTargetAccounts] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState(defaultValues?.accountId || "");
+  const [selectedTargetAccountId, setSelectedTargetAccountId] = useState(defaultValues?.targetAccountId || "");
 
-  const filteredCategories = categories.filter(cat => cat.type === selectedType);
+  const isSameAccount = Boolean(selectedType === 'TRANSFER' && selectedAccountId && selectedTargetAccountId && selectedAccountId === selectedTargetAccountId);
+
+  const filteredCategories = categories.filter(cat => {
+    if (selectedType === 'TRANSFER') {
+      return true; // 允许所有分类，或者您可以根据需要只返回 EXPENSE 分类
+    }
+    return cat.type === selectedType;
+  });
+
+  // Move selected category to top
+  if (defaultValues?.categoryId) {
+    const idx = filteredCategories.findIndex(c => c.id === defaultValues.categoryId);
+    if (idx > 0) { 
+      const [selected] = filteredCategories.splice(idx, 1);
+      filteredCategories.unshift(selected);
+    }
+  }
+
+  const topCategories = filteredCategories.slice(0, 6);
+  const restCategories = filteredCategories.slice(6);
+
+  // Filter accounts based on transaction type
+  const availableAccounts = accounts.filter(account => {
+    // Always include the currently selected account (for editing/viewing existing data)
+    if (defaultValues?.accountId && account.id === defaultValues.accountId) return true;
+    if (defaultValues?.targetAccountId && account.id === defaultValues.targetAccountId) return true;
+
+    if (selectedType === 'TRANSFER') return true;
+    if (currentUserId && account.user?.id) {
+      return account.user.id === currentUserId;
+    }
+    return true;
+  });
 
   // Group accounts by hierarchy
   const getFlattenedAccounts = () => {
-    const accountMap = new Map(accounts.map(a => [a.id, a]));
+    const accountMap = new Map(availableAccounts.map(a => [a.id, a]));
     const visited = new Set<string>();
     const result: (typeof accounts[0] & { depth: number })[] = [];
 
@@ -65,16 +103,16 @@ export function TransactionForm({
       result.push({ ...account, depth });
       
       // Find children
-      const children = accounts.filter(a => a.parentId === account.id);
+      const children = availableAccounts.filter(a => a.parentId === account.id);
       children.forEach(child => processAccount(child, depth + 1));
     };
 
     // Process top-level accounts (those with no parent or parent not in list)
-    const topLevelAccounts = accounts.filter(a => !a.parentId || !accountMap.has(a.parentId));
+    const topLevelAccounts = availableAccounts.filter(a => !a.parentId || !accountMap.has(a.parentId));
     topLevelAccounts.forEach(acc => processAccount(acc, 0));
 
     // Process any remaining accounts (orphans or cycles, though cycles shouldn't happen in valid tree)
-    accounts.forEach(acc => {
+    availableAccounts.forEach(acc => {
       if (!visited.has(acc.id)) {
         processAccount(acc, 0);
       }
@@ -84,8 +122,28 @@ export function TransactionForm({
   };
 
   const flattenedAccounts = getFlattenedAccounts();
+
+  // Ensure selected accounts are at the top (to prevent them from being hidden in collapsed section)
+  const prioritizeAccount = (id: string) => {
+    const idx = flattenedAccounts.findIndex(a => a.id === id);
+    if (idx > 0) {
+      const [acc] = flattenedAccounts.splice(idx, 1);
+      flattenedAccounts.unshift(acc);
+    }
+  };
+
+  if (selectedTargetAccountId) prioritizeAccount(selectedTargetAccountId);
+  if (selectedAccountId) prioritizeAccount(selectedAccountId);
+
   const topAccounts = flattenedAccounts.slice(0, 4);
   const restAccounts = flattenedAccounts.slice(4);
+
+  // Reset selected account if not in available list
+  useEffect(() => {
+    if (selectedAccountId && !availableAccounts.find(a => a.id === selectedAccountId)) {
+      setSelectedAccountId("");
+    }
+  }, [selectedType, availableAccounts, selectedAccountId]);
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
@@ -127,32 +185,72 @@ export function TransactionForm({
         />
       </div>
 
-      {selectedType !== 'TRANSFER' && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-              <Label htmlFor="categoryId">分类</Label>
-              <Link href="/settings?tab=categories" className="text-xs text-blue-600 hover:underline">
-                  管理分类
-              </Link>
-          </div>
-          <Select 
-            name="categoryId" 
-            defaultValue={defaultValues?.categoryId || "none"}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="选择分类" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">无分类</SelectItem>
-              {filteredCategories.map(cat => (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+            <Label htmlFor="categoryId">分类</Label>
+            <Link href="/settings?tab=categories" className="text-xs text-blue-600 hover:underline">
+                管理分类
+            </Link>
+        </div>
+        <Select 
+          name="categoryId" 
+          defaultValue={defaultValues?.categoryId || "none"}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="选择分类" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">无分类</SelectItem>
+            <SelectGroup>
+              <SelectLabel>常用分类</SelectLabel>
+              {topCategories.map(cat => (
                 <SelectItem key={cat.id} value={cat.id}>
                   {cat.name}
                 </SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+            </SelectGroup>
+
+            {restCategories.length > 0 && (
+              <>
+                {!showAllCategories ? (
+                  <div 
+                    className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowAllCategories(true);
+                    }}
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                    显示更多分类 ({restCategories.length})
+                  </div>
+                ) : (
+                  <>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>其他分类</SelectLabel>
+                      {restCategories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <div 
+                      className="p-2 text-center text-sm text-muted-foreground cursor-pointer hover:bg-muted flex items-center justify-center gap-1 border-t sticky bottom-0 bg-popover"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowAllCategories(false);
+                      }}
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                      收起更多分类
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="accountId">{selectedType === 'TRANSFER' ? '转出账户' : '账户'}</Label>
@@ -168,7 +266,8 @@ export function TransactionForm({
         ) : (
           <Select 
             name="accountId" 
-            defaultValue={defaultValues?.accountId} 
+            value={selectedAccountId} 
+            onValueChange={setSelectedAccountId}
             required
           >
             <SelectTrigger className="w-full">
@@ -273,9 +372,11 @@ export function TransactionForm({
             </div>
           ) : (
             <Select 
-              name="targetAccountId" 
-              required
-            >
+            name="targetAccountId" 
+            value={selectedTargetAccountId}
+            required
+            onValueChange={setSelectedTargetAccountId}
+          >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="选择转入账户" />
               </SelectTrigger>
@@ -365,6 +466,12 @@ export function TransactionForm({
         </div>
       )}
 
+      {isSameAccount && (
+        <div className="text-sm text-destructive font-medium px-1">
+          转出账户和转入账户不能相同
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="date">日期时间</Label>
         <Input 
@@ -397,7 +504,7 @@ export function TransactionForm({
             取消
           </Button>
         </Link>
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full" disabled={isPending || isSameAccount}>
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

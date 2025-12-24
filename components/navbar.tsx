@@ -10,7 +10,8 @@ import {
   PieChart, 
   ArrowRightLeft,
   Menu,
-  Settings
+  Settings,
+  Package
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { NavbarUser } from "./navbar-user";
@@ -37,6 +38,12 @@ export function Navbar() {
       label: "财富",
       icon: Wallet,
       active: pathname.startsWith("/wealth") || pathname.startsWith("/accounts") || pathname.startsWith("/assets"),
+    },
+    {
+      href: "/items",
+      label: "归物",
+      icon: Package,
+      active: pathname.startsWith("/items"),
     },
     {
       href: "/settings",
@@ -99,7 +106,7 @@ export function Navbar() {
       {/* Mobile Nav - Glassmorphism Bottom Bar - Hidden as requested */}
       {!isAuthPage && (
         <div className="hidden fixed bottom-4 left-4 right-4 z-50 md:hidden safe-area-bottom">
-          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-2 grid grid-cols-4 gap-1">
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border border-slate-200/60 dark:border-slate-800/60 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 p-2 grid grid-cols-5 gap-1">
              {routes.map((route) => (
                 <Link
                   key={route.href}

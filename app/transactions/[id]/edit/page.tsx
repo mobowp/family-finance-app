@@ -3,10 +3,13 @@ import { updateTransaction } from "@/app/actions/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TransactionForm } from "@/components/transaction-form";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 
-export default async function EditTransactionPage({ params }: { params: { id: string } }) {
+export default async function EditTransactionPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  const { id } = await params;
   const transaction = await prisma.transaction.findUnique({
-    where: { id: params.id }
+    where: { id: id }
   });
 
   if (!transaction) {
@@ -14,7 +17,13 @@ export default async function EditTransactionPage({ params }: { params: { id: st
   }
 
   const categories = await prisma.category.findMany();
-  const accounts = await prisma.account.findMany();
+  const accounts = await prisma.account.findMany({
+    include: {
+      user: {
+        select: { id: true, name: true }
+      }
+    }
+  });
 
   const updateAction = updateTransaction.bind(null, transaction.id);
 
@@ -29,11 +38,13 @@ export default async function EditTransactionPage({ params }: { params: { id: st
             action={updateAction}
             categories={categories}
             accounts={accounts}
+            currentUserId={session?.user?.id}
             defaultValues={{
               type: transaction.type,
               amount: transaction.amount,
               categoryId: transaction.categoryId,
               accountId: transaction.accountId,
+              targetAccountId: transaction.targetAccountId,
               date: transaction.date,
               description: transaction.description,
             }}

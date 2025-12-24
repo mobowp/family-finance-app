@@ -5,9 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/app/actions/user";
 
-export default async function EditAccountPage({ params }: { params: { id: string } }) {
+export default async function EditAccountPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const account = await prisma.account.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: { children: true }
   });
 

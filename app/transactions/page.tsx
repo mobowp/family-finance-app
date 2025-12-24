@@ -59,8 +59,10 @@ export default async function TransactionsPage({
   // Prepare Filters for List
   const where: Prisma.TransactionWhereInput = {
     user: {
-      // @ts-ignore
-      familyId: user.familyId || user.id // Fallback to user ID if no family (shouldn't happen with new logic)
+      OR: [
+        { id: user.id },
+        { familyId: user.familyId }
+      ]
     }
   };
 

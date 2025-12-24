@@ -32,8 +32,11 @@ export async function createUser(formData: FormData) {
         familyId: (currentUser as any)?.familyId, // Assign to same family
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create user:', error);
+    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+      throw new Error('该邮箱已被注册');
+    }
     throw new Error('创建用户失败');
   }
 
